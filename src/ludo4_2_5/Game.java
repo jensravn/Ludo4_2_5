@@ -5,39 +5,48 @@ package ludo4_2_5;
  * @author jensravn
  */
 public class Game {
-    
+
     Player[] player;
     Board board;
     boolean winnerFound;
-    int die;
+    int dice;
     int attempts;
-    
-    /** Game Constructor */
+    boolean play;
+
+    /**
+     * Game Constructor
+     */
     Game() {
         board = new Board();
         createPlayers();
     }
-    
-    /** Method to create oneToFour */
+
+    /**
+     * Method Create Players
+     */
     void createPlayers() {
         System.out.print("How many players are you going to be? ");
         int numberOfPlayers = Scan.oneToFour();
         player = new Player[numberOfPlayers];
-        
+
         for (int i = 0; i < numberOfPlayers; i++) {
             player[i] = new Player();
-            System.out.print("\nWhat's the name of player no. " + (i+1) + ": ");
+            System.out.print("\nWhat's the name of player no. " + (i + 1) + ": ");
             player[i].name = Scan.str();
         }
     }
-    
-    /** Play method */
+
+    /**
+     * Play method
+     */
     void play() {
         System.out.println("Let the game begin!");
         round();
     }
-    
-    /** Round method */
+
+    /**
+     * Round method
+     */
     void round() {
         int counter = 0;
         while (!winnerFound) {
@@ -46,67 +55,94 @@ public class Game {
             turn();
         }
     }
-    
-    /** Turn method*/
+
+    /**
+     * Turn method
+     */
     void turn() {
-        
-        for (int turn = 0; turn < player.length; turn++) {
-            
-            attempts = 1;
-            
-            while (attempts > 0) {
-            
-            if (player[turn].numberOfTokensInPlay() == 0) {
-                attempts = 3;
-            }
-            
-            die = Die.roll();
-            System.out.println("Player no. " + (turn+1) + " " + player[turn].name + " - " + " has turn");
-            System.out.println("You rolled " + die);
-            
-            if (noOptions(turn)) {
-                int chosenToken = chooseToken(turn);
-                player[turn].token[chosenToken].move(die);
-            }
-            
-            attempts--;
-            }
-            if (player[turn].won()) {
-                System.out.println("*** PLAYER NO. " + (turn+1) + " " +
-                        player[turn].name.toUpperCase() + " - " + " WON! ***");
-                System.exit(0);
+
+        while (!winnerFound) {
+            for (int turn = 0; turn < player.length; turn++) {
+
+                if (player[turn].numberOfTokensInPlay() == 0) {
+                        attempts = 3;
+                } else {
+                    attempts = 1;
+                }
+
+                while (attempts > 0) {
+
+                    dice = Die.roll();
+                    System.out.println("\nPlayer no. " + (turn + 1) + " " + player[turn].name + " - " + " has turn");
+                    System.out.println("You rolled " + dice);
+
+                    if (!hasOptions(turn)) {
+                        int chosenToken = chooseToken(turn);
+                        player[turn].token[chosenToken].move(turn, dice, board);
+                        board.printBoard();
+                    }
+
+                    attempts--;
+                }
+                if (player[turn].won()) {
+                    System.out.println("*** PLAYER NO. " + (turn + 1) + " "
+                            + player[turn].name.toUpperCase() + " - " + " WON! ***");
+                    winnerFound = true;
+                }
             }
         }
     }
-    
-    boolean noOptions(int turn) {
-        if(player[turn].numberOfTokensInPlay() == 0 && die != 6){
+
+    /** Method Has Options
+     * Checks if the user can move a token.
+     * Is false when no tokens are in play and the dice is not 6.
+     * @param turn
+     * @return 
+     */
+    boolean hasOptions(int turn) {
+        if (player[turn].numberOfTokensInPlay() == 0 && dice != 6) {
             return true;
         }
         return false;
     }
-    
+
+    /** Method Choose Token
+     * lets the user pick a specific token if multiple tokens are available
+     * @param turn
+     * @return 
+     */
     int chooseToken(int turn) {
         int chosenToken = 4;
-            if (player[turn].numberOfTokensInPlay() == 1) {
-                for (int i = 0; i < 4; i++) {
-                    if (player[turn].token[i].inPlay) {
-                        chosenToken = i;
-                    }
-                }
-            } else {
-                System.out.println("You can move the following tokens: ");
-                for (int i = 0; i < 4; i++) {
-                    if(player[turn].token[i].inPlay) {
-                        System.out.println("\n\tToken no. " + (i+1));
-                    }
-                }
-                chosenToken = Scan.oneToFour();
-                if (!player[turn].token[chosenToken].inPlay) {
-                    System.out.print("You can't move that token! Try again - ");
-                    chosenToken = chooseToken(turn);
+        if (player[turn].numberOfTokensInPlay() == 1) {
+            for (int i = 0; i < 4; i++) {
+                if (player[turn].token[i].inPlay) {
+                    chosenToken = i;
                 }
             }
+        } else {
+            System.out.println("You can move the following tokens: ");
+            for (int i = 0; i < 4; i++) {
+                if (player[turn].token[i].inPlay) {
+                    System.out.println("\tToken no. " + (i + 1));
+                }
+            }
+            System.out.println("Or you can get these into play: ");
+            for (int i = 0; i < 4; i++) {
+                if (dice == 6) {
+                    
+                    if (player[turn].token[i].start) {
+                        System.out.println("\tToken no. " + (i + 1));
+                    }
+                }
+            }
+            
+            chosenToken = Scan.oneToFour()-1;
+            
+            if (!player[turn].token[chosenToken].inPlay && !(player[turn].token[chosenToken].start && dice == 6)) {
+                System.out.print("You can't move that token! Try again - ");
+                chosenToken = chooseToken(turn);
+            }
+        }
         return chosenToken;
     }
 }
