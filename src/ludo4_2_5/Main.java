@@ -11,8 +11,15 @@ public class Main {
      */
     public static void main(String[] args) {
         
-        Game game = new Game();
-        game.play();
+        boolean play = true;
+        
+        while (play) {
+            Game game = new Game();
+            game.play();
+
+            System.out.print("\nGAME OVER \nDo you want to play another game?");
+            play = Scan.yesOrNo();
+        }
+        System.out.println("Bye!");
     }
-    
 }
