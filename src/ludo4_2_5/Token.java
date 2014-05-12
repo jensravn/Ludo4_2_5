@@ -23,19 +23,30 @@ public class Token {
             this.field += 1;
         } else {
             board.setField(turn, this.field, this.field+dice);
-            this.field += dice;
+            if (this.field+dice >= board.getNumberOfFields()) {
+                this.field = board.getNumberOfFields()-1;
+            } else {
+                this.field += dice;
+            }
         }
         System.out.print(" to " + this.field + "\n");
         
         if (this.field == 0) {
             this.setState(0);
-        } else if (this.field < board.getNumberOfFields()) {
-            this.setState(1);
-        } else {
+        } else if (this.field >= board.getNumberOfFields()-1) {
             this.setState(2);
+            System.out.println("!!!!!! PLAYER " + (turn+1) + " GOT A POINT !!!!!!");
+        } else {
+            this.setState(1);
         }
     }
 
+    /** Capture */
+    void capture() {
+        this.field = 0;
+        setState(0);
+    }
+    
     /**
      * Return state of the token 0 = start 1 = inPlay 2 = finish
      */
