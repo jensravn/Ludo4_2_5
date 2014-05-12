@@ -9,8 +9,12 @@ public class Die {
     /**
      * Method Roll Creates a random number between 1 and 6
      */
-    static int roll() {
-        return (int) (Math.random() * 6 + 1);
+    static int roll(boolean DEBUGMODE) {
+        if (DEBUGMODE) {
+            System.out.print("Choose dice: ");
+            return Scan.integer();
+        } else {
+            return (int) (Math.random() * 6 + 1);
+        }
     }
-
 }
