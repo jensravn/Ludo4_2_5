@@ -4,8 +4,11 @@ package ludo4_2_5;
  *
  * @author jensravn
  */
+
 public class Game {
 
+    boolean DEBUGMODE = false;
+    
     Player[] player;
     Board board;
     boolean winnerFound;
@@ -32,7 +35,7 @@ public class Game {
         for (int i = 0; i < numberOfPlayers; i++) {
             player[i] = new Player();
             System.out.print("\nWhat's the name of player no. " + (i + 1) + ": ");
-            player[i].name = Scan.str();
+            player[i].name = Scan.string();
         }
     }
 
@@ -63,23 +66,32 @@ public class Game {
 
         while (!winnerFound) {
             for (int turn = 0; turn < player.length; turn++) {
-
+                if (DEBUGMODE) {
+                    System.out.print("Choose player: ");
+                    turn = Scan.oneToFour()-1;
+                }
                 if (player[turn].numberOfTokensInPlay() == 0) {
                         attempts = 3;
                 } else {
                     attempts = 1;
                 }
 
+                System.out.println("\nPlayer no. " + (turn + 1) + " " + player[turn].name + " - " + " has turn");
                 while (attempts > 0) {
 
-                    dice = Die.roll();
-                    System.out.println("\nPlayer no. " + (turn + 1) + " " + player[turn].name + " - " + " has turn");
-                    System.out.println("You rolled " + dice);
+                    dice = Die.roll(DEBUGMODE);
 
-                    if (!hasOptions(turn)) {
+                    System.out.println("You rolled " + dice);
+                    
+                    if (dice == 6) {
+                        attempts = 0;
+                    }
+                    
+                    if (hasOptions(turn)) {
                         int chosenToken = chooseToken(turn);
                         player[turn].token[chosenToken].move(turn, dice, board);
-                        board.printBoard();
+                        capture(turn, chosenToken);
+                        board.printBoard(player);
                     }
 
                     attempts--;
@@ -101,9 +113,9 @@ public class Game {
      */
     boolean hasOptions(int turn) {
         if (player[turn].numberOfTokensInPlay() == 0 && dice != 6) {
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
     /** Method Choose Token
@@ -113,25 +125,23 @@ public class Game {
      */
     int chooseToken(int turn) {
         int chosenToken = 4;
-        if (player[turn].numberOfTokensInPlay() == 1) {
+        if (player[turn].numberOfTokensInPlay() == 1 && dice != 6) {
             for (int i = 0; i < 4; i++) {
                 if (player[turn].token[i].inPlay) {
                     chosenToken = i;
                 }
             }
         } else {
-            System.out.println("You can move the following tokens: ");
             for (int i = 0; i < 4; i++) {
                 if (player[turn].token[i].inPlay) {
-                    System.out.println("\tToken no. " + (i + 1));
+                    System.out.println("\tMove token no. " + (i + 1));
                 }
             }
-            System.out.println("Or you can get these into play: ");
             for (int i = 0; i < 4; i++) {
                 if (dice == 6) {
                     
                     if (player[turn].token[i].start) {
-                        System.out.println("\tToken no. " + (i + 1));
+                        System.out.println("\tGet token no. " + (i + 1) + " into play");
                     }
                 }
             }
@@ -144,5 +154,44 @@ public class Game {
             }
         }
         return chosenToken;
+    }
+    
+    /** Checks if there already is a token on the new field when a token is moved
+     *  - if that is the case the token standing on the field will be moved back to 0
+     *  - and the field will become a grave (marked by an X)
+     */
+    void capture(int turn, int chosenToken) {
+        
+        int tokensOnField = 0;
+        int standingPlayer = 4;
+        int standingToken = 4;
+        
+        if (player[turn].token[chosenToken].inPlay && player[turn].token[chosenToken].field < (board.getNumberOfFields()-6)){
+            for (int i = 0; i < player.length; i++) {
+                if (i != turn){
+                    for (int k = 0; k < 4; k++) {
+                        if (player[i].token[k].inPlay && player[i].token[k].field < (board.getNumberOfFields()-6)){
+                            if ((player[i].token[k].field + ((i+1) * 14)-14) % (board.getNumberOfFields()-6) == (player[turn].token[chosenToken].field + ((turn+1) * 14)-14) % (board.getNumberOfFields()-6)){
+                                tokensOnField++;
+                                standingPlayer = i;
+                                standingToken = k;
+                                
+                                board.setGrave(player[i].token[k].field + ((i+1) * 14)-14 % board.getNumberOfFields()-1);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (tokensOnField == 1){
+            player[standingPlayer].token[standingToken].capture();
+            System.out.println("Player " + (standingPlayer+1) + "'s token no. " + (standingToken+1) + " has been captured");
+            player[turn].quote();
+        } else if (tokensOnField > 1) {
+            player[turn].token[chosenToken].capture();
+            System.out.println("Player " + (turn+1) + "s token no. " + (chosenToken+1) + " has been captured");
+            player[standingPlayer].quote();
+        }
     }
 }
