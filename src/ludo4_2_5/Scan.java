@@ -11,7 +11,7 @@ public class Scan {
     /**
      * Input from user - any string
      */
-    static String str() {
+    static String string() {
 
         Scanner scan = new Scanner(System.in);
         return scan.nextLine();
@@ -35,6 +35,24 @@ public class Scan {
         return Integer.parseInt(input);
     }
     
+    /**
+     * Input from user - number
+     */
+    static int integer() {
+
+        String regex = "[0-9]+";
+        String input = "F";
+
+        while (!input.matches(regex)) {
+            Scanner scan = new Scanner(System.in);
+            input = scan.nextLine();
+            if (!input.matches(regex)) {
+                System.out.println("Invalid input. Choose a whole number");
+            }
+        }
+        return Integer.parseInt(input);
+    }
+    
     /** Input from user - Yes or No */
     static boolean yesOrNo() {
 
@@ -43,9 +61,9 @@ public class Scan {
         while (!input.equals("Y") || !input.equals("N")) {
             Scanner scan = new Scanner(System.in);
             input = scan.nextLine().toUpperCase();
-            if(!input.equals("Y")){
+            if(input.equals("Y")){
                 return true;
-            } else if (!input.equals("N")) {
+            } else if (input.equals("N")) {
                 return false;
             }
             else {
