@@ -10,6 +10,8 @@ public class Scan {
 
     /**
      * Input from user - any string
+     * 
+     * @return 
      */
     static String string() {
 
@@ -19,6 +21,8 @@ public class Scan {
 
     /**
      * Input from user - between 1 and 4
+     * 
+     * @return 
      */
     static int oneToFour() {
 
@@ -34,9 +38,11 @@ public class Scan {
         }
         return Integer.parseInt(input);
     }
-    
+
     /**
-     * Input from user - number
+     * Input from user - any number
+     * 
+     * @return 
      */
     static int integer() {
 
@@ -52,21 +58,24 @@ public class Scan {
         }
         return Integer.parseInt(input);
     }
-    
-    /** Input from user - Yes or No */
+
+    /**
+     * Input from user - Yes or No (Y/N)
+     *
+     * @return
+     */
     static boolean yesOrNo() {
 
         String input = "F";
-                
+
         while (!input.equals("Y") || !input.equals("N")) {
             Scanner scan = new Scanner(System.in);
             input = scan.nextLine().toUpperCase();
-            if(input.equals("Y")){
+            if (input.equals("Y")) {
                 return true;
             } else if (input.equals("N")) {
                 return false;
-            }
-            else {
+            } else {
                 System.out.println("Invalid input. Choose (Y)es or (N)o");
             }
         }
