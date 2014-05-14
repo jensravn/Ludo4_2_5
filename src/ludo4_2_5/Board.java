@@ -40,13 +40,26 @@ public class Board {
      * @param newField 
      */
     void setField(int turn, int oldField, int newField) {
-        oldField += ((turn + 1) * 14) - 14 % (p.length - 1);
+        
+        oldField += offSet(turn);
+        oldField %= p.length - 1;
         this.p[oldField] = 0;
-        newField += ((turn + 1) * 14) - 14 % (p.length - 1);
-        if (newField > p.length - 1) {
-            newField = p.length - 1;
+        
+        newField += offSet(turn);
+        
+        if (newField > p.length - 6 + offSet(turn)) {
+            newField -= offSet(turn)-1;
+        } else if (newField > p.length-1 + offSet(turn)) {
+            newField = p.length-1;
+        } else if (newField > p.length - 6){
+            newField %= (p.length - 6);
         }
         this.p[newField] = turn + 1;
+    }
+    
+    /** */
+    int offSet( int turn){
+        return ((turn + 1) * 14) - 14;
     }
 
     /**

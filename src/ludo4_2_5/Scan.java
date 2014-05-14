@@ -9,11 +9,11 @@ import java.util.Scanner;
 public class Scan {
 
     /**
-     * Input from user - any string
+     * Input from user - any nextLine
      * 
      * @return 
      */
-    static String string() {
+    static String nextLine() {
 
         Scanner scan = new Scanner(System.in);
         return scan.nextLine();

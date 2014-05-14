@@ -4,7 +4,7 @@ package ludo4_2_5;
  *
  * @author jensravn
  */
-public class Die {
+public class Dice {
 
     /**
      * Method Roll Creates a random number between 1 and 6.

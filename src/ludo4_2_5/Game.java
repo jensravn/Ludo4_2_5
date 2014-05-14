@@ -22,6 +22,16 @@ public class Game {
         board = new Board();
         createPlayers();
     }
+    
+    /**
+     * Game Constructor to use in testing (Skips the name input)
+     * 
+     * @param numberOfPlayers 
+     */
+    Game(int numberOfPlayers) {
+        board = new Board();
+        createPlayers(4);
+    }
 
     /**
      * Method CreatePlayers create an array with the number of players needed
@@ -35,10 +45,23 @@ public class Game {
         for (int i = 0; i < numberOfPlayers; i++) {
             player[i] = new Player();
             System.out.print("\nWhat's the name of player no. " + (i + 1) + ": ");
-            player[i].name = Scan.string();
+            player[i].name = Scan.nextLine();
         }
     }
+    
+    /**
+     * Method CreatePlayers to use in testing (Skips the name input)
+     * 
+     * @param numberOfPlayers 
+     */
+    void createPlayers(int numberOfPlayers) {
+        player = new Player[numberOfPlayers];
 
+        for (int i = 0; i < numberOfPlayers; i++) {
+            player[i] = new Player();
+        }
+    }
+    
     /**
      * Play method tells that the game is started and calls round()
      */
@@ -81,8 +104,8 @@ public class Game {
                 System.out.println("\nPlayer no. " + (turn + 1) + " " + player[turn].name + " - " + " has turn");
                 while (attempts > 0) {
 
-                    dice = Die.roll(DEBUGMODE);
-                    Scan.string();
+                    dice = Dice.roll(DEBUGMODE);
+                    Scan.nextLine();
                     System.out.println("You rolled " + dice);
 
                     if (dice == 6) {
@@ -167,7 +190,7 @@ public class Game {
      * 
      * @param turn
      * @param chosenToken 
-     */
+     */    
     void capture(int turn, int chosenToken) {
 
         int tokensOnField = 0;
@@ -184,7 +207,7 @@ public class Game {
                                 standingPlayer = i;
                                 standingToken = k;
 
-                                board.setGrave(player[i].token[k].field + ((i + 1) * 14) - 14 % board.getNumberOfFields() - 1);
+                                board.setGrave((player[i].token[k].field + ((i + 1) * 14) - 14) % (board.getNumberOfFields() - 1));
                             }
                         }
                     }
